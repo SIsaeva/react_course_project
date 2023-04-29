@@ -12,14 +12,11 @@ const GroupList = ({
         <ul className="list-group">
             {Object.values(items).map((item) => (
                 <li
-                    // key={items[item][valueProperty]}
                     key={item[valueProperty]}
                     className={
                         "list-group-item" +
-                        // (selectedItem === items[item] ? " active" : "")
                         (selectedItem === item ? " active" : "")
                     }
-                    // onClick={() => onItemSelect(items[item])}
                     onClick={() => onItemSelect(item)}
                     role="button"
                 >

@@ -7,7 +7,7 @@ import GroupList from "./groupList";
 import PropTypes from "prop-types";
 import SearchStatus from "./searchStatus";
 
-const Users = ({ allUsers, ...rest }) => {
+const Users = ({ users, ...rest }) => {
     const pageSize = 2;
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfession] = useState();
@@ -30,22 +30,28 @@ const Users = ({ allUsers, ...rest }) => {
     };
 
     const filteredUsers = selectedProf
-        ? allUsers.filter((user) => user.profession === selectedProf)
-        : allUsers;
+        ? users.filter(
+              (user) =>
+                  JSON.stringify(user.profession) ===
+                  JSON.stringify(selectedProf)
+          )
+        : users;
 
     const count = filteredUsers.length;
     const userCrop = paginate(filteredUsers, currentPage, pageSize);
     const clearFilter = () => {
         setSelectedProf();
     };
-    // useEffect(() => {
-    //     if (userCrop.length === 0 && currentPage !== 1) {
-    //         setCurrentPage((prev) => prev - 1);
-    //     }
-    // }, [allUsers]);
+
+    useEffect(() => {
+        if (userCrop.length === 0 && currentPage !== 1) {
+            setCurrentPage((prev) => prev - 1);
+        }
+    }, [users]);
+
     return (
         <div className="d-flex">
-            {professions && (
+            {professions && users && (
                 <div className="d-flex flex-column flex-shrink-0 p-3">
                     <GroupList
                         items={professions}
@@ -100,6 +106,6 @@ const Users = ({ allUsers, ...rest }) => {
     );
 };
 Users.propTypes = {
-    allUsers: PropTypes.arrayOf(PropTypes.object)
+    users: PropTypes.arrayOf(PropTypes.object)
 };
 export default Users;
