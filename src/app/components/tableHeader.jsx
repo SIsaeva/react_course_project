@@ -2,14 +2,15 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const TableHeader = ({ onSort, selectedSort, columns }) => {
-    const getIconStyle = (path, order) => {
-        const iconStyle =
-            order === "asc"
-                ? "bi-caret-up-fill"
-                : order === "desc"
-                ? "bi-caret-down-fill"
-                : "";
-        return path ? iconStyle : "";
+    const renderArrow = (currentPath, selectedSort) => {
+        if (selectedSort.path === currentPath) {
+            if (selectedSort.order === "asc") {
+                return <i className="bi bi-caret-up-fill"></i>;
+            } else {
+                return <i className="bi bi-caret-down-fill"></i>;
+            }
+        }
+        return null;
     };
 
     const handleSort = (item) => {
@@ -34,23 +35,13 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
                                 ? () => {
                                       handleSort(columns[column].path);
                                   }
-                                : undefined
+                                : null
                         }
                         {...{ role: columns[column].path && "button" }}
                         scope="col"
                     >
-                        {columns[column].name}
-                        <i
-                            className={
-                                "bi " +
-                                (selectedSort.path === columns[column].path
-                                    ? getIconStyle(
-                                          selectedSort.path,
-                                          selectedSort.order
-                                      )
-                                    : "")
-                            }
-                        ></i>
+                        {columns[column].name}{" "}
+                        {renderArrow(columns[column].path, selectedSort)}
                     </th>
                 ))}
             </tr>
