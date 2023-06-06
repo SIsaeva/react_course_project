@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import API from "../api";
+import API from "../../../api";
 import PropTypes from "prop-types";
-import Qualitie from "./qualitie";
 import { useHistory } from "react-router-dom";
+import QualitiesList from "../../UI/qualities/qualitiesList";
 
 const UserCard = ({ userId }) => {
     const [user, setUser] = useState();
@@ -12,28 +12,24 @@ const UserCard = ({ userId }) => {
     }, []);
 
     const history = useHistory();
-    const handleReturnToList = () => {
-        history.push("/users");
+    const handleUserEdit = () => {
+        history.push(`/users/${userId}/edit`);
     };
 
     if (user) {
         return (
             <>
                 <h1>{user.name}</h1>
-                <h2>{`Профессия: ${user.profession.name}`}</h2>
-                <span>
-                    {user.qualities.map((quality) => (
-                        <Qualitie key={quality._id} {...quality} />
-                    ))}
-                </span>
-                <h4>{`Встретился раз: ${user.completedMeetings}`}</h4>
-                <h3>{`Оценка: ${user.rate}`}</h3>
+                <h2>Профессия: {user.profession.name}</h2>
+                <QualitiesList qualities={user.qualities} />
+                <h4>Встретился раз: {user.completedMeetings}</h4>
+                <h3>Оценка: {user.rate}</h3>
                 <button
                     onClick={() => {
-                        handleReturnToList();
+                        handleUserEdit();
                     }}
                 >
-                    Все пользователи
+                    Изменить
                 </button>
             </>
         );
