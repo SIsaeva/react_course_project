@@ -4,8 +4,6 @@ import Main from "./layouts/main";
 import NavBar from "./components/UI/navBar";
 import Login from "./layouts/login";
 import UsersContent from "./layouts/usersContent";
-import UserEditCard from "./components/page/userCard/userEditCard";
-
 function App() {
     return (
         <div>
@@ -14,10 +12,9 @@ function App() {
                 <Route exact path="/" component={Main}></Route>
                 <Route path="/login/:type?" component={Login}></Route>
                 <Route
-                    path="/users/:userId/edit"
-                    component={UserEditCard}
+                    path="/users/:userId?/:edit?"
+                    component={UsersContent}
                 ></Route>
-                <Route path="/users/:userId?" component={UsersContent}></Route>
             </Switch>
         </div>
     );

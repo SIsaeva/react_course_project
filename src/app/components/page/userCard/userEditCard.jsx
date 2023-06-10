@@ -19,6 +19,8 @@ const UserEditCard = () => {
     const [professions, setProfession] = useState([]);
     const [qualities, setQualities] = useState([]);
     const [errors, setErrors] = useState({});
+    const history = useHistory();
+
     useEffect(() => {
         API.professions.fetchAll().then((data) => {
             const professionsList = Object.keys(data).map((professionName) => ({
@@ -57,7 +59,6 @@ const UserEditCard = () => {
         }
     };
 
-    const history = useHistory();
     const handleUserUpdate = () => {
         API.users.update(userId, user).then((data) => setUser(data));
         history.push(`/users/${userId}`);
@@ -115,7 +116,7 @@ const UserEditCard = () => {
         if (!isValid) return 0;
     };
     const isValid = Object.keys(errors).length === 0;
-    if (user) {
+    if (user && professions) {
         return (
             <>
                 <div className="container mt-5">
