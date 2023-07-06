@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { paginate } from "../../../utils/paginate";
 import Pagination from "../../common/pagination";
 import API from "../../../api";
@@ -6,34 +7,29 @@ import GroupList from "../../common/groupList";
 import SearchStatus from "../../UI/searchStatus";
 import UserTable from "../../UI/usersTable";
 import _ from "lodash";
-import TextField from "../../common/form/textField";
-
+import { useUser } from "../../../hooks/useUsers";
 const UsersListPage = () => {
-    const pageSize = 3;
+    const pageSize = 5;
+    const { users } = useUser();
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfession] = useState();
     const [selectedProf, setSelectedProf] = useState();
     const [searchString, setSearchString] = useState("");
-    const [sortBy, setSortBy] = useState({
-        path: "name",
-        order: "asc"
-    });
-
-    const [users, setUsers] = useState();
-    useEffect(() => {
-        API.users.fetchAll().then((data) => setUsers(data));
-    }, []);
+    const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
 
     const handleDelete = (userId) => {
-        setUsers((prev) => prev.filter((user) => user._id !== userId));
+        // setUsers(users.filter((user) => user._id !== userId));
+        console.log(userId);
     };
-
-    const handleToogleBookMark = (id) => {
-        setUsers((prev) =>
-            prev.map((user) =>
-                user._id === id ? { ...user, bookmark: !user.bookmark } : user
-            )
-        );
+    const handleToggleBookMark = (id) => {
+        const newArray = users.map((user) => {
+            if (user._id === id) {
+                return { ...user, bookmark: !user.bookmark };
+            }
+            return user;
+        });
+        // setUsers(newArray);
+        console.log(newArray);
     };
 
     useEffect(() => {
@@ -42,7 +38,7 @@ const UsersListPage = () => {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [selectedProf]);
+    }, [selectedProf, searchString]);
 
     const handlePageChange = (pageIndex) => {
         setCurrentPage(pageIndex);
@@ -96,7 +92,7 @@ const UsersListPage = () => {
 
         return (
             <div className="d-flex">
-                {professions && users && (
+                {professions && (
                     <div className="d-flex flex-column flex-shrink-0 p-3">
                         <GroupList
                             items={professions}
@@ -113,18 +109,18 @@ const UsersListPage = () => {
                 )}
                 <div className="d-flex flex-column">
                     <SearchStatus length={count} />
-                    <TextField
-                        id="search"
-                        name="search"
-                        value={searchString}
-                        placeHolder="Search..."
+                    <input
+                        type="text"
+                        name="searchString"
+                        placeholder="Search..."
                         onChange={handleSearchString}
+                        value={searchString}
                     />
                     {count > 0 && (
                         <UserTable
                             users={userCrop}
                             onDelete={handleDelete}
-                            onToogleBookMark={handleToogleBookMark}
+                            onToggleBookMark={handleToggleBookMark}
                             onSort={handleSort}
                             selectedSort={sortBy}
                         />
@@ -142,6 +138,9 @@ const UsersListPage = () => {
         );
     }
     return "loading...";
+};
+UsersListPage.propTypes = {
+    users: PropTypes.array
 };
 
 export default UsersListPage;

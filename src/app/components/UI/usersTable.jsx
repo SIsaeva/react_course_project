@@ -3,12 +3,13 @@ import PropTypes from "prop-types";
 import Bookmark from "../common/bookmark";
 import Qualities from "./qualities";
 import Table from "../common/table";
+import Profession from "./profession";
 
 const UserTable = ({
     users,
     onSort,
     selectedSort,
-    onToogleBookMark,
+    onToggleBookMark,
     onDelete,
     ...rest
 }) => {
@@ -18,7 +19,10 @@ const UserTable = ({
             name: "Качества",
             component: (user) => <Qualities qualities={user.qualities} />
         },
-        professions: { path: "profession.name", name: "Профессии" },
+        professions: {
+            name: "Профессии",
+            component: (user) => <Profession id={user.profession} />
+        },
         completedMeetings: {
             path: "completedMeetings",
             name: "Встретился, раз"
@@ -30,7 +34,7 @@ const UserTable = ({
             component: (user) => (
                 <Bookmark
                     status={user.bookmark}
-                    onClick={() => onToogleBookMark(user._id)}
+                    onClick={() => onToggleBookMark(user._id)}
                 />
             )
         },
@@ -59,7 +63,7 @@ UserTable.propTypes = {
     users: PropTypes.array.isRequired,
     onSort: PropTypes.func.isRequired,
     selectedSort: PropTypes.object.isRequired,
-    onToogleBookMark: PropTypes.func.isRequired,
+    onToggleBookMark: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired
 };
 
