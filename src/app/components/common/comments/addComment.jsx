@@ -45,7 +45,6 @@ const AddComment = ({ onSubmit }) => {
         if (!isValid) return;
         onSubmit(data);
         clearForm();
-        console.log(Object.keys(users));
     };
     const usersArray =
         users &&

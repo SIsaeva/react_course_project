@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 const QualityContext = React.createContext();
 
-export const useQuality = () => {
+export const useQualities = () => {
     return useContext(QualityContext);
 };
 
@@ -17,6 +17,7 @@ export const QualityProvider = ({ children }) => {
     useEffect(() => {
         getQualitiesList();
     }, []);
+
     useEffect(() => {
         if (error != null) {
             toast(error);

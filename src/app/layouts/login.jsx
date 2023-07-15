@@ -35,7 +35,7 @@ const Login = () => {
                             <p>
                                 Dont have account?
                                 <a role="button" onClick={toggleFormType}>
-                                    Sign in
+                                    Sign up
                                 </a>
                             </p>
                         </>
