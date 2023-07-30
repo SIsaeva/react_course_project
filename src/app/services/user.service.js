@@ -21,8 +21,8 @@ const userService = {
         );
         return data;
     },
-    updateUser: async (userId, payload) => {
-        await httpService.put(userEndpoint + userId, payload);
+    updateUser: async (payload) => {
+        await httpService.put(userEndpoint + payload._id, payload);
         // return data;
     }
 };

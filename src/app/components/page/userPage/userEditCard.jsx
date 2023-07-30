@@ -84,7 +84,7 @@ const UserEditCard = () => {
         const isValid = validate();
         if (!isValid) return;
         try {
-            await updateUser(userId, user);
+            await updateUser(user);
             history.push(`/users/${userId}`);
         } catch (error) {
             setErrors(error);
