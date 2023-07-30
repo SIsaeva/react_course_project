@@ -3,90 +3,58 @@ import { useParams, useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 import TextField from "../../common/form/textField";
 import RadioField from "../../common/form/radioField";
-import MultiSelectField from "../../common/form/multiSelectField";
 import SelectField from "../../common/form/selectField";
-import API from "../../../api";
+import MultiSelectField from "../../common/form/multiSelectField";
 import { validator } from "../../../utils/validator";
+import { useQualities } from "../../../hooks/useQuality";
+import { useProfessions } from "../../../hooks/useProfession";
+import { useUser } from "../../../hooks/useUsers";
+import { useAuth } from "../../../hooks/useAuth";
 
 const UserEditCard = () => {
     const { userId } = useParams();
-    const [user, setUser] = useState();
-
-    useEffect(() => {
-        API.users.getById(userId).then((data) => setUser(data));
-    }, []);
-
-    const [professions, setProfession] = useState([]);
-    const [qualities, setQualities] = useState([]);
+    const { updateUser } = useAuth();
+    const { getUserById } = useUser();
+    const [user, setUser] = useState(getUserById(userId));
+    const { qualities } = useQualities();
+    const { professions } = useProfessions();
     const [errors, setErrors] = useState({});
     const history = useHistory();
 
-    useEffect(() => {
-        API.professions.fetchAll().then((data) => {
-            const professionsList = Object.keys(data).map((professionName) => ({
-                label: data[professionName].name,
-                value: data[professionName]._id
-            }));
-            setProfession(professionsList);
-        });
-        API.qualities.fetchAll().then((data) => {
-            const qualitiesList = Object.keys(data).map((optionName) => ({
-                label: data[optionName].name,
-                value: data[optionName]._id,
-                color: data[optionName].color
-            }));
-            setQualities(qualitiesList);
-        });
-    }, []);
-    const handleChange = (target) => {
-        if (target.name === "profession") {
-            setUser((prevState) => ({
-                ...prevState,
-                [target.name]: transformSelectProfession(target.value)
-            }));
-        } else {
-            if (target.name === "qualities") {
-                setUser((prevState) => ({
-                    ...prevState,
-                    [target.name]: transformSelectQualities(target.value)
-                }));
-            } else {
-                setUser((prevState) => ({
-                    ...prevState,
-                    [target.name]: target.value
-                }));
-            }
-        }
-    };
+    const professionsList = professions.map((profession) => ({
+        label: profession.name,
+        value: profession._id
+    }));
 
-    const handleUserUpdate = () => {
-        API.users.update(userId, user).then((data) => setUser(data));
-        history.push(`/users/${userId}`);
+    const qualitiesList = qualities.map((quality) => ({
+        label: quality.name,
+        value: quality._id,
+        color: quality.color
+    }));
+
+    const handleChange = (target) => {
+        setUser((prevState) => ({
+            ...prevState,
+            [target.name]:
+                target.name === "qualities"
+                    ? transformSelectQualities(target.value)
+                    : target.value
+        }));
     };
 
     const transformUserQualities = (userQualities) => {
-        return Object.keys(userQualities).map((item) => ({
-            label: userQualities[item].name,
-            value: userQualities[item]._id,
-            color: userQualities[item].color
-        }));
+        return userQualities.map((item) => {
+            const quality = qualities?.find((q) => q._id === item);
+            return {
+                label: quality?.name,
+                value: quality?._id,
+                color: quality?.color
+            };
+        });
     };
-    const transformUserProfession = (userProfession) => {
-        return userProfession._id;
-    };
-    const transformSelectProfession = (selectProfession) => {
-        return {
-            _id: selectProfession,
-            name: professions.find((item) => item.value === selectProfession)
-                .label
-        };
-    };
+
     const transformSelectQualities = (selectQualities) => {
-        return Object.keys(selectQualities).map((item) => ({
-            name: selectQualities[item].label,
-            _id: selectQualities[item].value,
-            color: selectQualities[item].color
-        }));
+        return selectQualities.map((item) => item.value);
     };
 
     const validatorConfig = {
@@ -110,13 +78,21 @@ const UserEditCard = () => {
     useEffect(() => {
         validate();
     }, [user]);
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validate();
-        if (!isValid) return 0;
+        if (!isValid) return;
+        try {
+            await updateUser(userId, user);
+            history.push(`/users/${userId}`);
+        } catch (error) {
+            setErrors(error);
+        }
     };
+
     const isValid = Object.keys(errors).length === 0;
-    if (user && professions) {
+    if (user && professions && qualities) {
         return (
             <>
                 <button
@@ -146,10 +122,8 @@ const UserEditCard = () => {
                                 />
                                 <SelectField
                                     onChange={handleChange}
-                                    value={transformUserProfession(
-                                        user.profession
-                                    )}
-                                    options={professions}
+                                    value={user.profession}
+                                    options={professionsList}
                                     label="Выберите профессию"
                                     name="profession"
                                 />
@@ -165,7 +139,7 @@ const UserEditCard = () => {
                                 />
                                 <MultiSelectField
                                     label="Выберите качество"
-                                    options={qualities}
+                                    options={qualitiesList}
                                     onChange={handleChange}
                                     name="qualities"
                                     defaultValue={transformUserQualities(
@@ -175,7 +149,6 @@ const UserEditCard = () => {
                                 <button
                                     disabled={!isValid}
                                     className="btn btn-primary w-100 mx-auto"
-                                    onClick={handleUserUpdate}
                                 >
                                     Обновить
                                 </button>

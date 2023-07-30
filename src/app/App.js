@@ -9,6 +9,8 @@ import { ProfessionProvider } from "./hooks/useProfession";
 import { QualityProvider } from "./hooks/useQuality";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 import AuthProvider from "./hooks/useAuth";
+import ProtectedRoute from "./components/common/protectedRoute";
+import LogOut from "./layouts/logOut";
 
 function App() {
     return (
@@ -18,16 +20,16 @@ function App() {
                 <QualityProvider>
                     <ProfessionProvider>
                         <Switch>
-                            <Route exact path="/" component={Main}></Route>
-
+                            <ProtectedRoute
+                                path="/users/:userId?/:edit?"
+                                component={UsersContent}
+                            ></ProtectedRoute>
                             <Route
                                 path="/login/:type?"
                                 component={Login}
                             ></Route>
-                            <Route
-                                path="/users/:userId?/:edit?"
-                                component={UsersContent}
-                            ></Route>
+                            <Route path="/logout" component={LogOut}></Route>
+                            <Route exact path="/" component={Main}></Route>
                             <Redirect to="/" />
                         </Switch>
                     </ProfessionProvider>
