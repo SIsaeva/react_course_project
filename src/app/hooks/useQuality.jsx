@@ -40,16 +40,12 @@ export const QualityProvider = ({ children }) => {
         }
     }
 
-    function getUserQualities(idArray) {
-        return qualities.filter((quality) =>
-            idArray.some((q) => q === quality._id)
-        );
+    function getQuality(id) {
+        return qualities.find((q) => q._id === id);
     }
 
     return (
-        <QualityContext.Provider
-            value={{ isLoading, qualities, getUserQualities }}
-        >
+        <QualityContext.Provider value={{ isLoading, qualities, getQuality }}>
             {children}
         </QualityContext.Provider>
     );

@@ -6,18 +6,28 @@ import RadioField from "../../common/form/radioField";
 import SelectField from "../../common/form/selectField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import { validator } from "../../../utils/validator";
-import { useQualities } from "../../../hooks/useQuality";
-import { useProfessions } from "../../../hooks/useProfession";
 import { useUser } from "../../../hooks/useUsers";
 import { useAuth } from "../../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import {
+    getQualities,
+    getQualitiesLoadingStatus
+} from "../../../store/qualities.js";
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from "../../../store/professions";
 
 const UserEditCard = () => {
     const { userId } = useParams();
     const { updateUser } = useAuth();
     const { getUserById } = useUser();
     const [user, setUser] = useState(getUserById(userId));
-    const { qualities } = useQualities();
-    const { professions } = useProfessions();
+
+    const qualities = useSelector(getQualities());
+    const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
+    const professions = useSelector(getProfessions());
+    const professionsLoading = useSelector(getProfessionsLoadingStatus());
     const [errors, setErrors] = useState({});
     const history = useHistory();
 
@@ -92,7 +102,7 @@ const UserEditCard = () => {
     };
 
     const isValid = Object.keys(errors).length === 0;
-    if (user && professions && qualities) {
+    if (user && !professionsLoading && !qualitiesLoading) {
         return (
             <>
                 <button
