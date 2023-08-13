@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+
 import { nanoid } from "nanoid";
 import commentService from "../services/comment.service";
 import { toast } from "react-toastify";
+import { getCurrentUserId } from "../store/users";
+import { useSelector } from "react-redux";
 
 const CommentsContext = React.createContext();
 
@@ -14,25 +16,26 @@ export const useComments = () => {
 
 export const CommentsProvider = ({ children }) => {
     const [isLoading, setLoading] = useState(true);
-    const { currentUser } = useAuth();
+    const currentUserId = useSelector(getCurrentUserId());
     const { userId } = useParams();
     const [comments, setComments] = useState([]);
     const [error, setError] = useState(null);
     useEffect(() => {
         getComments();
     }, [userId]);
+
     async function createComment(data) {
         const comment = {
             ...data,
             _id: nanoid(),
             pageId: userId,
             created_at: Date.now(),
-            userId: currentUser._id
+            userId: currentUserId
         };
 
         try {
             const { content } = await commentService.createComment(comment);
-            setComments(prevState => [...prevState, content]);
+            setComments((prevState) => [...prevState, content]);
         } catch (error) {
             errorCatcher(error);
         } finally {
@@ -51,7 +54,9 @@ export const CommentsProvider = ({ children }) => {
         try {
             const { content } = await commentService.removeComment(id);
             if (content === null) {
-                setComments(prevState => prevState.filter(comment => comment._id !== id));
+                setComments((prevState) =>
+                    prevState.filter((comment) => comment._id !== id)
+                );
             }
         } catch (error) {
             errorCatcher(error);
@@ -68,7 +73,9 @@ export const CommentsProvider = ({ children }) => {
         }
     });
     return (
-        <CommentsContext.Provider value={{ comments, createComment, isLoading, removeComment }}>
+        <CommentsContext.Provider
+            value={{ comments, createComment, isLoading, removeComment }}
+        >
             {children}
         </CommentsContext.Provider>
     );

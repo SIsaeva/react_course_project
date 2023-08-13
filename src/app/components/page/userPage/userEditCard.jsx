@@ -6,7 +6,6 @@ import RadioField from "../../common/form/radioField";
 import SelectField from "../../common/form/selectField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import { validator } from "../../../utils/validator";
-import { useUser } from "../../../hooks/useUsers";
 import { useAuth } from "../../../hooks/useAuth";
 import { useSelector } from "react-redux";
 import {
@@ -17,13 +16,12 @@ import {
     getProfessions,
     getProfessionsLoadingStatus
 } from "../../../store/professions";
+import { getUserById } from "../../../store/users";
 
 const UserEditCard = () => {
     const { userId } = useParams();
     const { updateUser } = useAuth();
-    const { getUserById } = useUser();
-    const [user, setUser] = useState(getUserById(userId));
-
+    const [user, setUser] = useState(useSelector(getUserById(userId)));
     const qualities = useSelector(getQualities());
     const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
     const professions = useSelector(getProfessions());

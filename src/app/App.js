@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Switch, Route } from "react-router-dom";
 import Main from "./layouts/main";
 import NavBar from "./components/UI/navBar";
@@ -9,31 +9,26 @@ import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 import AuthProvider from "./hooks/useAuth";
 import ProtectedRoute from "./components/common/protectedRoute";
 import LogOut from "./layouts/logOut";
-import { useDispatch } from "react-redux";
-import { loadQualitiesList } from "./store/qualities";
-import { loadProfessionsList } from "./store/professions";
+import AppLoader from "./components/UI/hoc/appLoader";
 
 function App() {
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(loadQualitiesList());
-        dispatch(loadProfessionsList());
-    }, []);
     return (
         <div>
-            <AuthProvider>
-                <NavBar />
-                <Switch>
-                    <ProtectedRoute
-                        path="/users/:userId?/:edit?"
-                        component={UsersContent}
-                    ></ProtectedRoute>
-                    <Route path="/login/:type?" component={Login}></Route>
-                    <Route path="/logout" component={LogOut}></Route>
-                    <Route exact path="/" component={Main}></Route>
-                    <Redirect to="/" />
-                </Switch>
-            </AuthProvider>
+            <AppLoader>
+                <AuthProvider>
+                    <NavBar />
+                    <Switch>
+                        <ProtectedRoute
+                            path="/users/:userId?/:edit?"
+                            component={UsersContent}
+                        ></ProtectedRoute>
+                        <Route path="/login/:type?" component={Login}></Route>
+                        <Route path="/logout" component={LogOut}></Route>
+                        <Route exact path="/" component={Main}></Route>
+                        <Redirect to="/" />
+                    </Switch>
+                </AuthProvider>
+            </AppLoader>
             <ToastContainer />
         </div>
     );

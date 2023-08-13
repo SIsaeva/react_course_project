@@ -6,17 +6,16 @@ import GroupList from "../../common/groupList";
 import SearchStatus from "../../UI/searchStatus";
 import UserTable from "../../UI/usersTable";
 import _ from "lodash";
-import { useUser } from "../../../hooks/useUsers";
-import { useAuth } from "../../../hooks/useAuth";
 import { useSelector } from "react-redux";
 import {
     getProfessions,
     getProfessionsLoadingStatus
 } from "../../../store/professions";
+import { getCurrentUserId, getUsersList } from "../../../store/users";
 const UsersListPage = () => {
     const pageSize = 5;
-    const { users } = useUser();
-    const { currentUser } = useAuth();
+    const users = useSelector(getUsersList());
+    const currentUserId = useSelector(getCurrentUserId());
     const professions = useSelector(getProfessions());
     const professionLoading = useSelector(getProfessionsLoadingStatus());
     const [currentPage, setCurrentPage] = useState(1);
@@ -72,7 +71,7 @@ const UsersListPage = () => {
                       .includes(searchString.toLocaleLowerCase())
               )
             : data;
-        return filteredUsers.filter((user) => user._id !== currentUser._id);
+        return filteredUsers.filter((user) => user._id !== currentUserId);
     }
 
     if (users) {

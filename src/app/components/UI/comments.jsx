@@ -1,17 +1,44 @@
 import { orderBy } from "lodash";
-import React from "react";
-import { useComments } from "../../hooks/useComments";
+import React, { useEffect } from "react";
 import AddComment from "../common/comments/addComment";
 import CommentsList from "../common/comments/commentsList";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    createComment,
+    deleteComment,
+    getComments,
+    getCommentsLoadingStatus,
+    loadCommentsList
+} from "../../store/comments";
+import { useParams } from "react-router-dom";
+import { nanoid } from "nanoid";
+import { getCurrentUserId } from "../../store/users";
 
 const Comments = () => {
-    const { createComment, comments, removeComment } = useComments();
+    const { userId } = useParams();
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(loadCommentsList(userId));
+    }, [userId]);
+    const isLoading = useSelector(getCommentsLoadingStatus());
+    const comments = useSelector(getComments());
+    const currentUserId = useSelector(getCurrentUserId());
+
     const handleSubmit = (comment) => {
-        createComment(comment);
+        const data = {
+            ...comment,
+            _id: nanoid(),
+            pageId: userId,
+            created_at: Date.now(),
+            userId: currentUserId
+        };
+        dispatch(createComment(data));
     };
+
     const handleDeleteComment = (commentId) => {
-        removeComment(commentId);
+        dispatch(deleteComment(commentId));
     };
+
     const sortedComments = orderBy(comments, ["created_at"], ["desc"]);
     return (
         <>
@@ -26,10 +53,14 @@ const Comments = () => {
                     <div className="card-body ">
                         <h2>Comments</h2>
                         <hr />
-                        <CommentsList
-                            comments={sortedComments}
-                            onDelete={handleDeleteComment}
-                        />
+                        {!isLoading ? (
+                            <CommentsList
+                                comments={sortedComments}
+                                onDelete={handleDeleteComment}
+                            />
+                        ) : (
+                            "loading..."
+                        )}
                     </div>
                 </div>
             )}
