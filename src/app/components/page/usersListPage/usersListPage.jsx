@@ -59,18 +59,15 @@ const UsersListPage = () => {
     };
     function filterUsers(data) {
         const filteredUsers = selectedProf
-            ? data.filter(
-                  (user) =>
-                      JSON.stringify(user.profession) ===
-                      JSON.stringify(selectedProf)
-              )
+            ? data.filter((user) => user.profession === selectedProf._id)
             : searchString
             ? data.filter((user) =>
-                  JSON.stringify(user.name)
+                  user.name
                       .toLocaleLowerCase()
                       .includes(searchString.toLocaleLowerCase())
               )
             : data;
+        console.log(selectedProf);
         return filteredUsers.filter((user) => user._id !== currentUserId);
     }
 

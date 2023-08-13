@@ -61,7 +61,6 @@ export const loadCommentsList = (userId) => async (dispatch) => {
 export const createComment = (data) => async (dispatch) => {
     try {
         const { content } = await commentService.createComment(data);
-        console.log(content);
         dispatch(addComment(content));
     } catch (error) {
         addCommentFailed(error.message);

@@ -6,8 +6,7 @@ import RadioField from "../../common/form/radioField";
 import SelectField from "../../common/form/selectField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import { validator } from "../../../utils/validator";
-import { useAuth } from "../../../hooks/useAuth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
     getQualities,
     getQualitiesLoadingStatus
@@ -16,18 +15,18 @@ import {
     getProfessions,
     getProfessionsLoadingStatus
 } from "../../../store/professions";
-import { getUserById } from "../../../store/users";
+import { getUserById, updateUser } from "../../../store/users";
 
 const UserEditCard = () => {
+    const dispatch = useDispatch();
+    const history = useHistory();
     const { userId } = useParams();
-    const { updateUser } = useAuth();
     const [user, setUser] = useState(useSelector(getUserById(userId)));
     const qualities = useSelector(getQualities());
     const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
     const professions = useSelector(getProfessions());
     const professionsLoading = useSelector(getProfessionsLoadingStatus());
     const [errors, setErrors] = useState({});
-    const history = useHistory();
 
     const professionsList = professions.map((profession) => ({
         label: profession.name,
@@ -87,16 +86,11 @@ const UserEditCard = () => {
         validate();
     }, [user]);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        try {
-            await updateUser(user);
-            history.push(`/users/${userId}`);
-        } catch (error) {
-            setErrors(error);
-        }
+        dispatch(updateUser({ ...user }));
     };
 
     const isValid = Object.keys(errors).length === 0;
