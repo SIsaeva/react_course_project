@@ -67,7 +67,6 @@ const UsersListPage = () => {
                       .includes(searchString.toLocaleLowerCase())
               )
             : data;
-        console.log(selectedProf);
         return filteredUsers.filter((user) => user._id !== currentUserId);
     }
 
